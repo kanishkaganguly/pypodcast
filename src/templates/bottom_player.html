@@ -1,0 +1,62 @@
+<div class="columns has-background-light is-fixed-bottom">
+    <!-- Left Pane: Title and Description -->
+    <div class="navbar-brand column is-3">
+        <div class="navbar-item">
+            <figure class="image is-48x48 mr-2">
+                <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Current podcast" />
+            </figure>
+            <div>
+                <p class="has-text-weight-bold">Current Episode</p>
+                <p class="is-size-7">Podcast Name</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Center Pane: Controls and Progress -->
+    <div class="navbar-center column is-7">
+        <!-- Internal vertical columns -->
+        <div
+            class="is-flex is-flex-direction-column is-justify-content-space-evenly is-align-content-space-evenly is-align-items-center">
+
+            <!-- Controls -->
+            <div class="navbar-controls mb-6">
+                <div class="buttons">
+                    <button class="button is-small">
+                        <span class="icon" id="prev"><i class="fas fa-step-backward"></i></span>
+                    </button>
+                    <button class="button is-medium is-primary">
+                        <span class="icon paused" id="play-pause"><i class="fas fa-play"></i></span>
+                    </button>
+                    <button class="button is-small">
+                        <span class="icon" id="next"><i class="fas fa-step-forward"></i></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="navbar-progress mt-6">
+                <input id="progress-slider" class="slider has-output is-fullwidth" step="1" min="0" max="100" value="45"
+                    type="range">
+                <output for="progress-slider">45</output>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Right Pane: Volume -->
+    <div class="navbar-volume column is-2">
+        <!-- Internal vertical columns -->
+        <div
+            class="is-flex is-flex-direction-column is-justify-content-center is-align-content-space-evenly is-align-items-center">
+
+            <!-- Volume Dial-->
+            <div id="volume-display" class="progress-circle is-success mb-1" value="10" max="100">
+                <span id="volume-value" class="progress-inner">10%</span>
+            </div>
+
+            <!-- Volume Slider -->
+            <input id="volume-slider" class="slider tb-1" step="1" min="0" max="100" value="10" type="range">
+        </div>
+    </div>
+</div>
+<script>bulmaSlider.attach();</script>

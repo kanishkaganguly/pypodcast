@@ -1,0 +1,90 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Podcast Player</title>
+
+    <!-- JS Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/js/bulma-slider.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/circular-progress.css') }}" />
+</head>
+
+<body>
+    <!-- Top-level container -->
+    <div class="container is-fluid">
+        <!-- Two columns for left and right panes -->
+        <div class="columns">
+
+            <!-- Left Pane -->
+            <!-- Episodes -->
+            <div id="left-pane" class="column is-two-thirds">
+                <div class="column is-two-thirds">
+                    <h2 class="title is-4 has-text-centered">Episodes</h2>
+                    <div class="column" id="episodes-list-container">
+                        {% for episode in episodes %}
+                        {{ episode }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Pane -->
+            <!-- Podcasts -->
+            <div id="right-pane" class="column">
+                <!-- Internal flexbox for vertical columns -->
+                <div id="podcasts-container"
+                    class="is-fullwidth is-flex is-flex-direction-column is-justify-content-space-between is-align-content-space-between">
+
+                    <!-- Title header -->
+                    <h2 class="title is-4 has-text-centered mt-2">Podcasts</h2>
+
+                    <!-- Tabs -->
+                    <div class="tabs is-centered is-toggle">
+                        <ul>
+                            <li id="podcasts-list-tab" class="is-active">
+                                <a>
+                                    <span class="icon is-small">
+                                        <i class="fas fa-podcast" aria-hidden="true"></i>
+                                    </span>
+                                    <span>Podcasts</span>
+                                </a>
+                            </li>
+                            <li id="new-podcasts-tab">
+                                <a>
+                                    <span class="icon is-small">
+                                        <i class="fas fa-plus" aria-hidden="true"></i>
+                                    </span>
+                                    <span>Add New</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Content Container -->
+                    <div id="podcasts-columns" class="is-fullwidth">
+                        <div class="is-flex is-flex-direction-column" id="podcasts-list-container">
+                        </div>
+                        <div class="is-fullwidth is-invisible" id="add-podcast-container"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End left and right panes -->
+    </div> <!-- End top-level container -->
+    <div class="fixed-bottom-bar" id="bottom-player"></div>
+</body>
+
+</html>
