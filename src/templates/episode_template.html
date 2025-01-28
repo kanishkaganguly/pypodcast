@@ -1,20 +1,20 @@
-<div class="box">
+<div class="box episode-box mb-2">
     <article class="media">
         <div class="media-content">
             <div class="content">
                 <p>
-                    <strong>Episode {{ episode_number }}: {{ episode_name }} </strong>
-                    <br />
-                    <small>{{ episode_description }}</small>
+                    <strong id="episode-title">Episode {{ episode_number }}: {{ episode_name }} </strong>
                     <br />
                     <small>{{ episode_duration }}</small>
+                    <br />
+                    Released: {{ episode_pubdate }}
                 </p>
             </div>
         </div>
         <div class="media-right">
             <button class="button is-primary">
-                <span class="icon">
-                    <i class="fas fa-play"></i>
+                <span class="icon" id="episode-play" episode-number="{{ episode_number }}">
+                    <i class=" fas fa-play"></i>
                 </span>
             </button>
         </div>

@@ -35,6 +35,7 @@ run-volume: stop remove
     -e NVIDIA_VISIBLE_DEVICES=all \
     -e DISPLAY=:0 \
     --runtime=nvidia \
+    --device=/dev/snd:/dev/snd \
     pypodcast:latest
 
 

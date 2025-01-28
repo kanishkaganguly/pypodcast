@@ -9,8 +9,10 @@ COPY . /pypodcast
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
     build-essential \
-    pkg-config && \
+    pkg-config \
+    portaudio19-dev \
+    python3-all-dev && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     python3 -m pip install --upgrade pip && \
-    python3 -m pip install wheel requests xmltodict flask
+    python3 -m pip install wheel requests xmltodict flask thefuzz pyaudio tqdm

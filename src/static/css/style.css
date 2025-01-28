@@ -1,5 +1,6 @@
 body {
     padding-bottom: 5rem;
+    overflow: hidden;
 }
 
 .fixed-bottom-bar {
@@ -52,6 +53,26 @@ body {
 .progress {
     margin-bottom: 0;
     height: 0.5rem;
+}
+
+#podcasts-columns {
+    overflow-x: hidden;
+    /* overflow-y: auto; */
+    max-height: 55vh;
+    scrollbar-width: thin;
+}
+
+#episodes-columns {
+    overflow-x: hidden;
+    max-height: 55vh;
+    scrollbar-width: thin;
+}
+
+.podcast-description {
+    text-overflow: ellipsis;
+    max-width: 60ch;
+    word-wrap: break-word;
+    white-space: initial;
 }
 
 @media screen and (min-width: 769px) {

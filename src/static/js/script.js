@@ -1,8 +1,123 @@
 ////////////////////////////////////////////////////////////////
 // Utility Functions
+var now_playing_podname = null;
+var now_playing_episode_name = null;
+var player;
+var player_id = 0;
+var is_player_ready = false;
+var audio_duration = 0;
+
 function removeAllChildren(parent_element_id) {
   $(parent_element_id).empty();
 }
+
+////////////////////////////////////////////////////////////////
+// Audio Functions
+
+function createAudioPlayerFromNowPlaying(now_playing_podname, episode_number) {
+  $.ajax({
+    url: "/get_episode_url/" + now_playing_podname.toLowerCase() + "/" + episode_number,
+    type: "GET",
+    success: function (data) {
+      console.log("Get Episode URL: " + data);
+      _createAudioPlayer(data);
+    }
+  });
+}
+
+function audioPlayerLoaded() {
+  is_player_ready = true;
+  audio_duration = player.duration();
+}
+
+function _createAudioPlayer(audio_url) {
+  console.log("Audio URL: " + audio_url);
+
+  player = new Howl({
+    src: Array(audio_url),
+    html5: true,
+    autoplay: false,
+    volume: 0.2,
+    onload: audioPlayerLoaded,
+    onplay: updateProgressDisplay,
+    onpause: stopProgressChecker,
+    onstop: stopProgressChecker
+  });
+}
+
+////////////////////////////////////////////////////////////////
+// UI Functions
+
+$(document).on("click", "#dark-mode-toggle", function () {
+  $("html").toggleClass("theme-dark");
+  $("#top-navbar").toggleClass("has-background-dark has-background-light");
+  $("#bottom-player").toggleClass("has-background-dark has-background-light");
+  $("#top-navbar-title").toggleClass("has-text-primary-25 has-text-primary-25-invert");
+  $(this).find("[data-fa-i2svg]").toggleClass("fa-moon fa-sun");
+});
+
+$(document).on("mouseover", ".podcast-box", function () {
+  this.style.cursor = "pointer";
+});
+
+$(document).on("click", ".podcast-box", function () {
+  podcast_name = $(this).find("#podcast-name-display").text();
+  console.log("Clicked Podcast: " + podcast_name);
+  now_playing_podname = podcast_name;
+
+  removeAllChildren("#episodes-list-container");
+  call_episodes_renderer(podcast_name);
+});
+
+$(document).on("click", "#episode-play", function () {
+  episode_number = $(this).attr("episode-number");
+  get_episode_name = $(this).closest(".media-right").closest(".media").find("#episode-title")[0].innerText;
+
+  // Check for existing audio stream
+  // and unload it first
+  if (now_playing_podname != get_episode_name) {
+    if (is_player_ready) {
+      console.log("Unloading previous episode");
+      player.stop();
+      player.unload();
+    }
+  }
+  now_playing_episode_name = get_episode_name;
+  console.log("Clicked Play Episode: " + episode_number + " of " + now_playing_podname);
+  console.log("Episode Name: " + now_playing_episode_name);
+
+  // Change the play button to a spinner
+  $(this)
+    .find("[data-fa-i2svg]")
+    .toggleClass("fa-play")
+    .toggleClass("fa-spinner");
+
+  // Load the episode
+  $.ajax({
+    url: "/load/" + now_playing_podname.toLowerCase() + "/" + episode_number,
+    type: "POST",
+    beforeSend: function () {
+      console.log("Loading episode for playback");
+    },
+    complete: function (data) {
+      if (data.statusText != "OK") {
+        console.log(data.statusText);
+        return;
+      } else {
+        console.log("Loaded episode for playback");
+        createAudioPlayerFromNowPlaying(now_playing_podname, episode_number);
+      }
+    }
+  });
+
+  // Update the UI
+  $(this)
+    .find("[data-fa-i2svg]")
+    .toggleClass("fa-play")
+    .toggleClass("fa-spinner");
+  $("#bottom-player-episode-name").text(now_playing_episode_name);
+  $("#bottom-player-podcast-name").text(now_playing_podname);
+});
 
 ////////////////////////////////////////////////////////////////
 // Render Components
@@ -14,7 +129,7 @@ const RenderType = {
 
 function call_default_renderer(rendertype) {
   $.ajax({
-    url: "/render?rendertype=" + rendertype + "&default=true",
+    url: "/render/default/" + rendertype,
     dataType: "html",
     success: function (data) {
       if (rendertype == RenderType.EPISODE) {
@@ -28,9 +143,10 @@ function call_default_renderer(rendertype) {
   });
 }
 
-function call_episodes_renderer() {
+function call_episodes_renderer(podcast_name) {
   $.ajax({
-    url: "/render?rendertype=" + RenderType.EPISODE + "&default=false",
+    url: "/render/episodes/" + podcast_name.toLowerCase(),
+    type: "POST",
     dataType: "html",
     success: function (data) {
       $("#episodes-list-container").append(data);
@@ -38,10 +154,19 @@ function call_episodes_renderer() {
   });
 }
 
-function call_podcasts_renderer() {
+function call_podcasts_renderer(url) {
+  if (arguments.length == 0) {
+    var load_from_cache = "/render/podcast";
+    call_url = load_from_cache;
+  } else {
+    var load_from_url = "/render/podcasts/" + url;
+    call_url = load_from_url;
+  }
+
   $.ajax({
-    url: "/render?rendertype=" + RenderType.PODCAST + "&renderdefault=false",
+    url: call_url,
     dataType: "html",
+    type: "POST",
     success: function (data) {
       $("#podcasts-list-container").append(data);
     },
@@ -67,29 +192,41 @@ $(document).on("input change", "#volume-slider", function () {
 $(document).on("mouseup", "#volume-slider", function (e) {
   e.preventDefault();
 
-  $.ajax({
-    url: "/control/volume/" + $(this).val(),
-    type: "POST",
-  });
+  console.log("Volume: " + $(this).val() / 100.0);
+  player.volume($(this).val() / 100.0);
 });
 ////////////////////////////////////////////////////////////////
 // Progress Slider
-$(document).on("mouseup", "#progress-slider", function (e) {
-  $.ajax({
-    url: "/control/seek/" + $(this).val(),
-    type: "POST",
+
+// Update progress display
+var progressCheckerInterval = null;
+function updateProgressDisplay() {
+  progressCheckerInterval = setInterval(function () {
+    curr_progress = player.seek();
+    // console.log("Progress: " + (curr_progress / audio_duration) * 100);
+    $("#progress-slider").val((curr_progress / audio_duration) * 100);
+    $("output[for='progress-slider']").text(Math.round((curr_progress / audio_duration) * 100));
   });
+}
+function stopProgressChecker() {
+  clearInterval(progressCheckerInterval);
+}
+
+// Set progress
+$(document).on("mousedown", "#progress-slider", function (e) {
+  player.pause();
+});
+
+$(document).on("mouseup", "#progress-slider", function (e) {
+  curr_seek = audio_duration * ($(this).val() / 100.0);
+  console.log("Seek To: " + curr_seek);
+  player.seek(curr_seek);
+
+  player.play();
 });
 
 ////////////////////////////////////////////////////////////////
 // Player Controls
-
-const ControlType = {
-  PLAY: 1,
-  PAUSE: 2,
-  NEXT: 3,
-  PREV: 4,
-};
 
 $(document).on("click", "#play-pause", function () {
   console.log("Clicked Play/Pause");
@@ -97,35 +234,31 @@ $(document).on("click", "#play-pause", function () {
 
   if (is_paused) {
     $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
-    $.ajax({
-      url: "/control/player/" + ControlType.PLAY,
-      type: "POST",
-    });
+
+    if (is_player_ready) {
+      player.play();
+    }
+
     $(this).removeClass("paused");
   } else {
     $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
-    $.ajax({
-      url: "/control/player/" + ControlType.PAUSE,
-      type: "POST",
-    });
+
+    if (is_player_ready) {
+      player.pause();
+    }
+
     $(this).addClass("paused");
   }
 });
 
 $(document).on("click", "#prev", function () {
   console.log("Clicked Previous");
-  $.ajax({
-    url: "/control/player/" + ControlType.PREV,
-    type: "POST",
-  });
+
 });
 
 $(document).on("click", "#next", function () {
   console.log("Clicked Next");
-  $.ajax({
-    url: "/control/player/" + ControlType.NEXT,
-    type: "POST",
-  });
+
 });
 ////////////////////////////////////////////////////////////////
 // Podcast Tabs

@@ -1,6 +1,6 @@
-<div class="box">
+<div class="box podcast-box mb-3">
     <article class="media">
-        <div class="media-left is-4">
+        <div class="media-left is-4 is-text-centered">
             <figure class="image is-64x64">
                 <img src="{{ podcast_image }}" alt="{{ podcast_name }}" />
             </figure>
@@ -8,7 +8,11 @@
         <div class="media-content is-8">
             <div class="content">
                 <p>
-                    <strong>{{ podcast_name }}</strong>
+                    <strong id="podcast-name-display">{{ podcast_name }}</strong></br>
+                    <small id="podcast-owner-display">{{ podcast_owner }}</small>
+                </p>
+                <p id="podcast-description-display" class="has-text-left is-size-7 podcast-description">
+                    {{ podcast_description }}
                 </p>
             </div>
         </div>

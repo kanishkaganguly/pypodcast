@@ -11,7 +11,9 @@
     <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/js/bulma-slider.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.core.min.js"
+        integrity="sha512-d00Brs/+XQUUaO0Y9Uo8Vw63o7kS6ZcLM2P++17kALrI8oihAfL4pl1jQObeRBgv06j7xG0GHOhudAW0BdrycA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
     <!-- Stylesheets -->
@@ -20,9 +22,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-tooltip@3.0.2/dist/css/bulma-tooltip.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/circular-progress.css') }}" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-divider@1.1.0/dist/bulma-divider.min.css">
 </head>
 
 <body>
+    <!-- Top navbar -->
+    <nav id="top-navbar" class="navbar has-background-light" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <h1 class="title navbar-item has-text-primary-25" id="top-navbar-title">Podcast Player</h1>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <button class="button is-dark" id="dark-mode-toggle">
+                        <span class="icon">
+                            <i class="fas fa-moon" aria-hidden="true"></i>
+                        </span>
+                        <span>Dark Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <!-- Top-level container -->
     <div class="container is-fluid">
         <!-- Two columns for left and right panes -->
@@ -30,23 +53,39 @@
 
             <!-- Left Pane -->
             <!-- Episodes -->
-            <div id="left-pane" class="column is-two-thirds">
-                <div class="column is-two-thirds">
-                    <h2 class="title is-4 has-text-centered">Episodes</h2>
-                    <div class="column" id="episodes-list-container">
-                        {% for episode in episodes %}
-                        {{ episode }}
-                        {% endfor %}
+            <div id="left-pane" class="column is-one-third">
+                <!-- Internal flexbox for vertical columns -->
+                <div id="episodes-container" class="is-fullwidth">
+
+                    <!-- Title header -->
+                    <h2 class="title is-4 has-text-centered mt-2">Episodes</h2>
+
+                    <!-- Content Container -->
+                    <div id="episodes-columns" class="is-fullwidth">
+                        <!-- is-flex is-flex-direction-column is-justify-content-space-between is-align-content-space-between -->
+                        <div class="is-flex is-flex-direction-column" id="episodes-list-container">
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Column Divider -->
+            <div class="divider is-vertical"></div>
+
+            <!-- Center Pane -->
+            <div id="center-pane" class="column is-one-third">
+                <!-- Title header -->
+                <h2 class="title is-4 has-text-centered mt-2">Now Playing</h2>
+            </div>
+
+            <!-- Column Divider -->
+            <div class="divider is-vertical"></div>
+
             <!-- Right Pane -->
             <!-- Podcasts -->
-            <div id="right-pane" class="column">
+            <div id="right-pane" class="column is-one-third">
                 <!-- Internal flexbox for vertical columns -->
-                <div id="podcasts-container"
-                    class="is-fullwidth is-flex is-flex-direction-column is-justify-content-space-between is-align-content-space-between">
+                <div id="podcasts-container" class="is-fullwidth is-flex is-flex-direction-column">
 
                     <!-- Title header -->
                     <h2 class="title is-4 has-text-centered mt-2">Podcasts</h2>
@@ -74,7 +113,7 @@
                     </div>
 
                     <!-- Content Container -->
-                    <div id="podcasts-columns" class="is-fullwidth">
+                    <div id="podcasts-columns"> <!--class="is-fullwidth" -->
                         <div class="is-flex is-flex-direction-column" id="podcasts-list-container">
                         </div>
                         <div class="is-fullwidth is-invisible" id="add-podcast-container"></div>
@@ -84,7 +123,7 @@
 
         </div> <!-- End left and right panes -->
     </div> <!-- End top-level container -->
-    <div class="fixed-bottom-bar" id="bottom-player"></div>
+    <div class="fixed-bottom-bar has-background-light" id="bottom-player"></div>
 </body>
 
 </html>

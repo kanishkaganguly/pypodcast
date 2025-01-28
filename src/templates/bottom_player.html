@@ -1,4 +1,4 @@
-<div class="columns has-background-light is-fixed-bottom">
+<div class="columns is-fixed-bottom">
     <!-- Left Pane: Title and Description -->
     <div class="navbar-brand column is-3">
         <div class="navbar-item">
@@ -6,8 +6,8 @@
                 <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Current podcast" />
             </figure>
             <div>
-                <p class="has-text-weight-bold">Current Episode</p>
-                <p class="is-size-7">Podcast Name</p>
+                <p id="bottom-player-episode-name" class="has-text-weight-bold">Current Episode</p>
+                <p id="bottom-player-podcast-name" class="is-size-7">Podcast Name</p>
             </div>
         </div>
     </div>
@@ -35,16 +35,16 @@
 
             <!-- Progress -->
             <div class="navbar-progress mt-6">
-                <input id="progress-slider" class="slider has-output is-fullwidth" step="1" min="0" max="100" value="45"
+                <input id="progress-slider" class="slider has-output is-fullwidth" step="1" min="0" max="100" value="0"
                     type="range">
-                <output for="progress-slider">45</output>
+                <output for="progress-slider">0</output>
             </div>
 
         </div>
     </div>
 
     <!-- Right Pane: Volume -->
-    <div class="navbar-volume column is-2">
+    <div class="navbar-volume column is-2 mt-2">
         <!-- Internal vertical columns -->
         <div
             class="is-flex is-flex-direction-column is-justify-content-center is-align-content-space-evenly is-align-items-center">
