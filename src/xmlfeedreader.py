@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 import time
 import json
 from src.paths import Paths
-from thefuzz import fuzz as fz
 from thefuzz import process as fzp
 
 

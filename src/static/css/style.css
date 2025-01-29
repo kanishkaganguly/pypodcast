@@ -1,3 +1,5 @@
+/* -------------------- MAIN LAYOUT  -------------------------- */
+/* ------------------------------------------------------------ */
 body {
     padding-bottom: 5rem;
     overflow: hidden;
@@ -11,6 +13,16 @@ body {
     z-index: 30;
 }
 
+/* -------------------- TOP NAVBAR ---------------------------- */
+/* ------------------------------------------------------------ */
+/* @media screen and (min-width: 769px) {
+    .navbar {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+}
+
 .navbar {
     display: flex;
     flex-direction: column;
@@ -19,16 +31,11 @@ body {
 
 .navbar-brand {
     flex: 0 0 auto;
-}
+} */
 
-.navbar-controls {
-    flex: 0 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0.5rem 0;
-}
 
+/* -------------------- Right Pane: Volume -------------------- */
+/* ------------------------------------------------------------ */
 .navbar-volume {
     display: flex;
     flex-direction: column;
@@ -45,16 +52,14 @@ body {
     margin: 0 0.5rem;
 }
 
-.navbar-progress {
-    width: 100%;
-    padding: 0.5rem 0;
-}
+/* -------------------- Center Pane: Progress ----------------- */
+/* ------------------------------------------------------------ */
 
-.progress {
-    margin-bottom: 0;
-    height: 0.5rem;
-}
 
+
+
+/* -------------------- General Styles ------------------------ */
+/* ------------------------------------------------------------ */
 #podcasts-columns {
     overflow-x: hidden;
     /* overflow-y: auto; */
@@ -73,28 +78,4 @@ body {
     max-width: 60ch;
     word-wrap: break-word;
     white-space: initial;
-}
-
-@media screen and (min-width: 769px) {
-    .navbar {
-        flex-direction: row;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .navbar-controls {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        margin: 0;
-    }
-
-    .navbar-volume {
-        margin-left: auto;
-    }
-
-    .navbar-progress {
-        flex-basis: 100%;
-        order: 1;
-    }
 }

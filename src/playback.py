@@ -5,6 +5,7 @@ from tqdm import tqdm
 import pyaudio
 from pathlib import Path
 from src.paths import Paths
+from typing import Tuple
 
 
 class Playback:
@@ -67,6 +68,11 @@ class Playback:
 
         print("Finished fetching audio")
         return True
+
+    def fetch_cover(self) -> Tuple[bool, str]:
+        print("Fetching cover")
+
+        return [True, self.feed.podcast_info.image]
 
 
 if __name__ == "__main__":

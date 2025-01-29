@@ -21,6 +21,7 @@ def load_default_episode(podcast_name=None) -> str:
         episode_name="Episode 1 Title",
         episode_description="Episode Description",
         episode_duration="00:00:00",
+        is_default="default",
     )
 
 
@@ -45,6 +46,7 @@ def load_custom_episode(podcast_name=None) -> str:
                         episode_name=f"{episode.title}",
                         episode_duration=f"{str(timedelta(seconds=episode.duration_seconds))}",
                         episode_pubdate=f"{str(datetime.strftime(episode.pub_date, '%a, %m-%d-%Y'))}",
+                        is_default="custom",
                     )
                 )
             return "\n".join(episodes_render_list)
@@ -58,6 +60,7 @@ def load_default_podcast() -> str:
         "podcast_template.html",
         podcast_name="Podcast 1",
         podcast_image="https://placehold.co/128x128/orange/white?text=Podcast+1",
+        is_default="default",
     )
 
 
@@ -84,6 +87,7 @@ def load_custom_podcast(podcast_name=None) -> str:
                     podcast_image=feed.podcast_info.image,
                     podcast_owner=feed.podcast_info.owner,
                     podcast_description=feed.podcast_info.description,
+                    is_default="custom",
                 )
             )
 

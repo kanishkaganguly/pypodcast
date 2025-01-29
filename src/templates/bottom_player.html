@@ -3,24 +3,25 @@
     <div class="navbar-brand column is-3">
         <div class="navbar-item">
             <figure class="image is-48x48 mr-2">
-                <img src="https://bulma.io/assets/images/placeholders/128x128.png" alt="Current podcast" />
+                <img id="bottom-player-image" src="https://bulma.io/assets/images/placeholders/128x128.png"
+                    alt="Current podcast image" />
             </figure>
             <div>
                 <p id="bottom-player-episode-name" class="has-text-weight-bold">Current Episode</p>
-                <p id="bottom-player-podcast-name" class="is-size-7">Podcast Name</p>
+                <p id="bottom-player-podcast-name" class="is-size-6">Podcast Name</p>
+                <p id="bottom-player-duration" class="is-size-7">00:00:00</p>
             </div>
         </div>
     </div>
 
     <!-- Center Pane: Controls and Progress -->
-    <div class="navbar-center column is-7">
+    <div class="navbar-center column">
         <!-- Internal vertical columns -->
-        <div
-            class="is-flex is-flex-direction-column is-justify-content-space-evenly is-align-content-space-evenly is-align-items-center">
+        <div class="is-flex is-flex-direction-column is-justify-content-space-evenly">
 
             <!-- Controls -->
-            <div class="navbar-controls mb-6">
-                <div class="buttons">
+            <div class="navbar-controls is-flex is-justify-content-center mt-3">
+                <div class=" buttons is-flex is-flex-direction-row">
                     <button class="button is-small">
                         <span class="icon" id="prev"><i class="fas fa-step-backward"></i></span>
                     </button>
@@ -34,10 +35,9 @@
             </div>
 
             <!-- Progress -->
-            <div class="navbar-progress mt-6">
-                <input id="progress-slider" class="slider has-output is-fullwidth" step="1" min="0" max="100" value="0"
+            <div class="navbar-progress">
+                <input id="progress-slider" class="slider is-fullwidth" step="1" min="0" max="100" value="0"
                     type="range">
-                <output for="progress-slider">0</output>
             </div>
 
         </div>

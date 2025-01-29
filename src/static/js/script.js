@@ -11,6 +11,20 @@ function removeAllChildren(parent_element_id) {
   $(parent_element_id).empty();
 }
 
+/**
+ * Disables all UI interactions before any audio is loaded.
+ */
+function disable_all_UI() {
+  // Disable default episode play button
+  $("#episode-play").click(false);
+
+  // Disable play-pause button on bottom player
+  $("#play-pause").click(false);
+
+  // Disable progress slider on bottom player
+  $("#progress-slider").val(0);
+}
+
 ////////////////////////////////////////////////////////////////
 // Audio Functions
 
@@ -48,6 +62,7 @@ function _createAudioPlayer(audio_url) {
 ////////////////////////////////////////////////////////////////
 // UI Functions
 
+// Dark Mode
 $(document).on("click", "#dark-mode-toggle", function () {
   $("html").toggleClass("theme-dark");
   $("#top-navbar").toggleClass("has-background-dark has-background-light");
@@ -56,12 +71,21 @@ $(document).on("click", "#dark-mode-toggle", function () {
   $(this).find("[data-fa-i2svg]").toggleClass("fa-moon fa-sun");
 });
 
+// Change cursor on hover for podcast boxes
 $(document).on("mouseover", ".podcast-box", function () {
   this.style.cursor = "pointer";
 });
 
+// Render episodes when podcast box is clicked
 $(document).on("click", ".podcast-box", function () {
   podcast_name = $(this).find("#podcast-name-display").text();
+
+  // Check for default podcast and do nothing
+  if ($(this).hasClass("default")) {
+    $(this).click(false);
+    return;
+  }
+
   console.log("Clicked Podcast: " + podcast_name);
   now_playing_podname = podcast_name;
 
@@ -69,9 +93,25 @@ $(document).on("click", ".podcast-box", function () {
   call_episodes_renderer(podcast_name);
 });
 
+
+/**
+ * Event Handler for when a episode play button is clicked.
+ * @function
+ * @param {object} event - The event object.
+ * @param {object} event.target - The target element of the event.
+ * @param {string} podcast_name - The name of the podcast.
+ * @listens click
+ */
 $(document).on("click", "#episode-play", function () {
   episode_number = $(this).attr("episode-number");
   get_episode_name = $(this).closest(".media-right").closest(".media").find("#episode-title")[0].innerText;
+
+  // Check for default episode and do nothing
+  get_parent_box = $(this).closest(".media-right").closest(".media").closest(".box")[0];
+  if ($(get_parent_box).hasClass("default")) {
+    $(this).click(false);
+    return;
+  }
 
   // Check for existing audio stream
   // and unload it first
@@ -82,22 +122,22 @@ $(document).on("click", "#episode-play", function () {
       player.unload();
     }
   }
+
+  // Update global variables
   now_playing_episode_name = get_episode_name;
   console.log("Clicked Play Episode: " + episode_number + " of " + now_playing_podname);
   console.log("Episode Name: " + now_playing_episode_name);
-
-  // Change the play button to a spinner
-  $(this)
-    .find("[data-fa-i2svg]")
-    .toggleClass("fa-play")
-    .toggleClass("fa-spinner");
 
   // Load the episode
   $.ajax({
     url: "/load/" + now_playing_podname.toLowerCase() + "/" + episode_number,
     type: "POST",
+    context: this,
     beforeSend: function () {
       console.log("Loading episode for playback");
+      // Change the play button to a spinner
+      $(this).find("[data-fa-i2svg]")
+        .toggleClass("fa-play fa-spinner");
     },
     complete: function (data) {
       if (data.statusText != "OK") {
@@ -107,16 +147,27 @@ $(document).on("click", "#episode-play", function () {
         console.log("Loaded episode for playback");
         createAudioPlayerFromNowPlaying(now_playing_podname, episode_number);
       }
-    }
+
+      // Update to playing state
+      $(this).find("[data-fa-i2svg]")
+        .toggleClass("fa-spinner fa-play");
+
+      // Update bottom player
+      $("#bottom-player-episode-name").text(now_playing_episode_name);
+      $("#bottom-player-podcast-name").text(now_playing_podname);
+
+      // Load episode image and update bottom player
+      $.ajax({
+        url: "/load/img/" + now_playing_podname.toLowerCase(),
+        type: "POST",
+        success: function (data) {
+          console.log("Loaded episode image");
+          $("#bottom-player-image").attr("src", data.data);
+        }
+      });
+    },
   });
 
-  // Update the UI
-  $(this)
-    .find("[data-fa-i2svg]")
-    .toggleClass("fa-play")
-    .toggleClass("fa-spinner");
-  $("#bottom-player-episode-name").text(now_playing_episode_name);
-  $("#bottom-player-podcast-name").text(now_playing_podname);
 });
 
 ////////////////////////////////////////////////////////////////
@@ -126,6 +177,17 @@ const RenderType = {
   PODCAST: 2,
   PLAYER: 3,
 };
+
+/**
+ * Renders default content for a specified type by sending an AJAX request.
+ *
+ * Depending on the rendertype, it appends the retrieved HTML data to the
+ * appropriate container: episodes-list-container, podcasts-list-container,
+ * or bottom-player.
+ *
+ * @param {number} rendertype - The type of content to render. Should be one
+ * of the properties of RenderType (EPISODE, PODCAST, PLAYER).
+ */
 
 function call_default_renderer(rendertype) {
   $.ajax({
@@ -143,17 +205,28 @@ function call_default_renderer(rendertype) {
   });
 }
 
+/**
+ * Calls the episodes renderer and renders the episodes for the given podcast.
+ *
+ * @param {string} podcast_name The name of the podcast to render episodes for.
+ */
 function call_episodes_renderer(podcast_name) {
   $.ajax({
     url: "/render/episodes/" + podcast_name.toLowerCase(),
     type: "POST",
     dataType: "html",
-    success: function (data) {
-      $("#episodes-list-container").append(data);
-    },
+  }).done(function (data) {
+    $("#episodes-list-container").append(data);
   });
 }
 
+/**
+ * Calls the podcasts renderer and renders the podcasts from a given URL or
+ * loads them from cache.
+ *
+ * @param {string} [url] The URL to load the podcasts from. If not provided,
+ * the podcasts are loaded from cache.
+ */
 function call_podcasts_renderer(url) {
   if (arguments.length == 0) {
     var load_from_cache = "/render/podcast";
@@ -163,16 +236,25 @@ function call_podcasts_renderer(url) {
     call_url = load_from_url;
   }
 
+  removeAllChildren("#podcasts-list-container");
+
   $.ajax({
     url: call_url,
     dataType: "html",
     type: "POST",
-    success: function (data) {
-      $("#podcasts-list-container").append(data);
-    },
+  }).done(function (data) {
+    $("#podcasts-list-container").append(data);
   });
 }
 
+
+////////////////////////////////////////////////////////////////
+// Page Load Functions
+
+/**
+ * Calls the default renderers for all types of content.
+ * This is called when the page is loaded.
+ */
 $(function () {
   for (let i = 0; i < 5; i++) {
     call_default_renderer(RenderType.PODCAST);
@@ -180,7 +262,10 @@ $(function () {
   call_default_renderer(RenderType.EPISODE);
   call_default_renderer(RenderType.PLAYER);
   bulmaSlider.attach();
+
+  disable_all_UI();
 });
+
 ////////////////////////////////////////////////////////////////
 // Volume Slider
 
@@ -202,11 +287,22 @@ $(document).on("mouseup", "#volume-slider", function (e) {
 var progressCheckerInterval = null;
 function updateProgressDisplay() {
   progressCheckerInterval = setInterval(function () {
+
     curr_progress = player.seek();
-    // console.log("Progress: " + (curr_progress / audio_duration) * 100);
     $("#progress-slider").val((curr_progress / audio_duration) * 100);
-    $("output[for='progress-slider']").text(Math.round((curr_progress / audio_duration) * 100));
-  });
+
+    hours = Math.floor(curr_progress / 3600);
+    curr_progress %= 3600;
+    minutes = Math.floor(curr_progress / 60);
+    seconds = curr_progress % 60;
+    $("#bottom-player-duration").text(
+      (hours + "").padStart(2, "0")
+      + ":"
+      + (minutes + "").padStart(2, "0")
+      + ":"
+      + (Math.round(seconds) + "").padStart(2, "0")
+    );
+  }, 1000);
 }
 function stopProgressChecker() {
   clearInterval(progressCheckerInterval);
@@ -214,15 +310,19 @@ function stopProgressChecker() {
 
 // Set progress
 $(document).on("mousedown", "#progress-slider", function (e) {
-  player.pause();
+  if (is_player_ready) {
+    player.pause();
+  }
 });
 
 $(document).on("mouseup", "#progress-slider", function (e) {
   curr_seek = audio_duration * ($(this).val() / 100.0);
   console.log("Seek To: " + curr_seek);
-  player.seek(curr_seek);
 
-  player.play();
+  if (is_player_ready) {
+    player.seek(curr_seek);
+    player.play();
+  }
 });
 
 ////////////////////////////////////////////////////////////////
