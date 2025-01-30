@@ -74,6 +74,15 @@ class Playback:
 
         return [True, self.feed.podcast_info.image]
 
+    def fetch_episode_summary(self, episode_num) -> Tuple[bool, str]:
+        print("Fetching episode summary")
+
+        res, episode = self.feed.find_episode(episode_num)
+        if not res:
+            return [False, ""]
+        else:
+            return [True, episode.summary]
+
 
 if __name__ == "__main__":
     playback = Playback("necronomipod", 360)

@@ -8,8 +8,9 @@ from src.render import (
     load_default_podcast,
     load_custom_podcast,
     load_bottomplayer,
+    load_episode_card,
 )
-
+from urllib.parse import unquote
 from src.playback import Playback
 
 # Set up Flask-Caching configuration
@@ -54,8 +55,8 @@ def get_episode_url(podname, episode) -> str | None:
     :return: The URL of the MP3 file if it exists, 404 otherwise.
     """
     try:
-        return url_for(
-            "static", _external=True, filename=f"audio/{podname}-{episode}.mp3"
+        return unquote(
+            url_for("static", _external=True, filename=f"audio/{podname}-{episode}.mp3")
         )
     except FileNotFoundError as e:
         return str(e), 404
@@ -102,6 +103,21 @@ def load_podcast_image(podname) -> str | None:
     return jsonify(status=200, mimetype="text/plain", data=img)
 
 
+@app.route("/load/summary/<podname>/<episode>", methods=["POST"])
+def load_podcast_summary(podname, episode) -> str | None:
+    print(f"Load Podcast Summary: {podname}")
+
+    summary = ""
+    if cache.has("playback_object"):
+        playback = cache.get("playback_object")
+        summary = playback.fetch_episode_summary(int(episode))
+        if summary[0]:
+            summary = summary[1]
+            cache.set(f"podcast_summary_{podname}_{episode}", summary)
+
+    return jsonify(status=200, mimetype="text/plain", data=summary)
+
+
 ############################
 # Render routes
 ############################
@@ -120,6 +136,9 @@ def render_components(rendertype) -> str | None:
     if render_type == RenderType.PLAYER:
         print("Render Player")
         return load_bottomplayer()
+    if render_type == RenderType.CARD:
+        print("Render Card")
+        return load_episode_card()
 
     return ""
 

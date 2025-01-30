@@ -21,6 +21,5 @@ RUN apt update && \
     xmltodict \
     flask \
     thefuzz \
-    pyaudio \
     tqdm \
     flask-caching

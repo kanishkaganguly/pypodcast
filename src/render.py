@@ -11,6 +11,7 @@ class RenderType(IntEnum):
     EPISODE = 1
     PODCAST = 2
     PLAYER = 3
+    CARD = 4
 
 
 def load_default_episode(podcast_name=None) -> str:
@@ -97,3 +98,8 @@ def load_custom_podcast(podcast_name=None) -> str:
 def load_bottomplayer() -> str:
     with open("src/templates/bottom_player.html", "r") as bottom_player:
         return Markup(bottom_player.read())
+
+
+def load_episode_card() -> str:
+    with open("src/templates/episode_card.html", "r") as episode_card:
+        return Markup(episode_card.read())

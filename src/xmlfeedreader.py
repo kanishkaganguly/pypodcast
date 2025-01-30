@@ -59,6 +59,12 @@ class FeedReader:
 
         return (False, "", "")
 
+    def find_episode(self, episode_num: int) -> Tuple[bool, None | Episode]:
+        for episode in self.podcast_info.episodes:
+            if episode.episode_num == episode_num:
+                return (True, episode)  # Found
+        return (False, None)
+
     def fetch_feed(self) -> None:
         update_now: bool = False
 
@@ -154,12 +160,6 @@ class FeedReader:
                 episode_data.duration_seconds = float(episode["itunes:duration"])
 
             self.podcast_info.episodes.append(episode_data)
-
-    def find_episode(self, episode_num: int) -> Tuple[bool, None | Episode]:
-        for episode in self.podcast_info.episodes:
-            if episode.episode_num == episode_num:
-                return (True, episode)  # Found
-        return (False, None)
 
 
 if __name__ == "__main__":

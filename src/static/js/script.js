@@ -30,7 +30,7 @@ function disable_all_UI() {
 
 function createAudioPlayerFromNowPlaying(now_playing_podname, episode_number) {
   $.ajax({
-    url: "/get_episode_url/" + now_playing_podname.toLowerCase() + "/" + episode_number,
+    url: "/get_episode_url/" + now_playing_podname.toLowerCase().replaceAll(" ", "_") + "/" + episode_number,
     type: "GET",
     success: function (data) {
       console.log("Get Episode URL: " + data);
@@ -105,6 +105,7 @@ $(document).on("click", ".podcast-box", function () {
 $(document).on("click", "#episode-play", function () {
   episode_number = $(this).attr("episode-number");
   get_episode_name = $(this).closest(".media-right").closest(".media").find("#episode-title")[0].innerText;
+  get_episode_pubdate = $(this).closest(".media-right").closest(".media").find("#episode-pubdate")[0].innerText;
 
   // Check for default episode and do nothing
   get_parent_box = $(this).closest(".media-right").closest(".media").closest(".box")[0];
@@ -130,7 +131,7 @@ $(document).on("click", "#episode-play", function () {
 
   // Load the episode
   $.ajax({
-    url: "/load/" + now_playing_podname.toLowerCase() + "/" + episode_number,
+    url: "/load/" + now_playing_podname.toLowerCase().replaceAll(" ", "_") + "/" + episode_number,
     type: "POST",
     context: this,
     beforeSend: function () {
@@ -152,17 +153,35 @@ $(document).on("click", "#episode-play", function () {
       $(this).find("[data-fa-i2svg]")
         .toggleClass("fa-spinner fa-play");
 
-      // Update bottom player
+      // Update UI
+      // 1. update bottom player
+      // 2. update center pane
       $("#bottom-player-episode-name").text(now_playing_episode_name);
       $("#bottom-player-podcast-name").text(now_playing_podname);
+      $("#episode-center-title").text(now_playing_episode_name);
+      $("#episode-center-pubdate").text(get_episode_pubdate);
 
-      // Load episode image and update bottom player
+      // Load episode image and 
+      // 1. update bottom player
+      // 2. update center pane
       $.ajax({
-        url: "/load/img/" + now_playing_podname.toLowerCase(),
+        url: "/load/img/" + now_playing_podname.toLowerCase().replaceAll(" ", "_"),
         type: "POST",
         success: function (data) {
           console.log("Loaded episode image");
           $("#bottom-player-image").attr("src", data.data);
+          $("#episode-center-image-large").attr("src", data.data);
+        }
+      });
+
+      // Load episode summary and
+      // 1. update center pane
+      $.ajax({
+        url: "/load/summary/" + now_playing_podname.toLowerCase().replaceAll(" ", "_") + "/" + episode_number,
+        type: "POST",
+        success: function (data) {
+          console.log("Loaded episode summary");
+          $("#episode-center-summary").html(data.data);
         }
       });
     },
@@ -176,6 +195,7 @@ const RenderType = {
   EPISODE: 1,
   PODCAST: 2,
   PLAYER: 3,
+  CARD: 4
 };
 
 /**
@@ -200,6 +220,8 @@ function call_default_renderer(rendertype) {
         $("#podcasts-list-container").append(data);
       } else if (rendertype == RenderType.PLAYER) {
         $("#bottom-player").append(data);
+      } else if (rendertype == RenderType.CARD) {
+        $("#center-pane").append(data);
       }
     },
   });
@@ -212,7 +234,7 @@ function call_default_renderer(rendertype) {
  */
 function call_episodes_renderer(podcast_name) {
   $.ajax({
-    url: "/render/episodes/" + podcast_name.toLowerCase(),
+    url: "/render/episodes/" + podcast_name.toLowerCase().replaceAll(" ", "_"),
     type: "POST",
     dataType: "html",
   }).done(function (data) {
@@ -261,6 +283,7 @@ $(function () {
   }
   call_default_renderer(RenderType.EPISODE);
   call_default_renderer(RenderType.PLAYER);
+  call_default_renderer(RenderType.CARD);
   bulmaSlider.attach();
 
   disable_all_UI();
@@ -335,7 +358,7 @@ $(document).on("click", "#play-pause", function () {
   if (is_paused) {
     $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
 
-    if (is_player_ready) {
+    if (is_player_ready && !player.playing()) {
       player.play();
     }
 
@@ -343,11 +366,29 @@ $(document).on("click", "#play-pause", function () {
   } else {
     $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
 
-    if (is_player_ready) {
+    if (is_player_ready && player.playing()) {
       player.pause();
     }
 
     $(this).addClass("paused");
+  }
+});
+
+$(document).on("click", "#seek-fwd", function () {
+  console.log("Clicked Seek Forward");
+  if (is_player_ready && player.playing()) {
+    player.pause();
+    player.seek(player.seek() + 15);
+    player.play();
+  }
+});
+
+$(document).on("click", "#seek-back", function () {
+  console.log("Clicked Seek Backward");
+  if (is_player_ready && player.playing()) {
+    player.pause();
+    player.seek(player.seek() - 15);
+    player.play();
   }
 });
 
@@ -360,6 +401,7 @@ $(document).on("click", "#next", function () {
   console.log("Clicked Next");
 
 });
+
 ////////////////////////////////////////////////////////////////
 // Podcast Tabs
 $(document).on("click", "#podcasts-list-tab", function () {
@@ -373,6 +415,7 @@ $(document).on("click", "#podcasts-list-tab", function () {
 
   call_podcasts_renderer();
 });
+
 ////////////////////////////////////////////////////////////////
 // New Podcast Tab
 $(document).on("click", "#new-podcasts-tab", function () {

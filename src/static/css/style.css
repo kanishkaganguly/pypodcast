@@ -15,23 +15,6 @@ body {
 
 /* -------------------- TOP NAVBAR ---------------------------- */
 /* ------------------------------------------------------------ */
-/* @media screen and (min-width: 769px) {
-    .navbar {
-        flex-direction: row;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-}
-
-.navbar {
-    display: flex;
-    flex-direction: column;
-    padding: 0.5rem 1rem;
-}
-
-.navbar-brand {
-    flex: 0 0 auto;
-} */
 
 
 /* -------------------- Right Pane: Volume -------------------- */
@@ -61,10 +44,24 @@ body {
 /* -------------------- General Styles ------------------------ */
 /* ------------------------------------------------------------ */
 #podcasts-columns {
-    overflow-x: hidden;
-    /* overflow-y: auto; */
     max-height: 55vh;
     scrollbar-width: thin;
+}
+
+#episode-center-description {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    max-height: 8vh;
+    scrollbar-width: thin;
+}
+
+#episode-center-description:hover {
+    overflow-y: scroll;
+}
+
+#episode-center-image-large {
+    width: 100%;
+    height: 100%;
 }
 
 #episodes-columns {
