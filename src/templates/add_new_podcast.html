@@ -1,0 +1,25 @@
+<div class="field" id="new-podcast-url-field">
+    <label class="label mt-5">Podcast URL</label>
+
+    <div class="control has-icons-left my-5">
+        <input class="input" type="url" id="new-podcast-url-input" placeholder="https://example.com/podcast.xml"
+            title="Podcast URL in RSS XML format" required />
+        <span class="icon is-small is-left">
+            <i class="fas fa-rss" aria-hidden="true"></i>
+        </span>
+    </div>
+</div>
+
+<div class="field">
+    <label class="label is-small">Progress</label>
+    <progress id="new-podcast-progress" class="progress is-small is-primary" max="100" value="0">15%</progress>
+</div>
+
+<div class="field is-grouped is-grouped-centered">
+    <div class="control" id="new-podcast-url-submit">
+        <button class="button is-success">Submit</button>
+    </div>
+    <div class="control" id="new-podcast-url-cancel">
+        <button class="button is-danger">Cancel</button>
+    </div>
+</div>

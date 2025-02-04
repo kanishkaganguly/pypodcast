@@ -1,4 +1,5 @@
 import requests as req
+from requests.exceptions import StreamConsumedError
 from dataclasses import dataclass, field
 import xmltodict
 from pathlib import Path
@@ -8,6 +9,7 @@ import time
 import json
 from src.paths import Paths
 from thefuzz import process as fzp
+from tqdm import tqdm
 
 
 class FeedReader:
@@ -36,6 +38,52 @@ class FeedReader:
         self.feed_url = feed_url
         self.podcast_info: FeedReader.Podcast = self.Podcast()
 
+    @classmethod
+    def init_from_url(cls, feed_url: str) -> None:
+        """
+        Given a URL, this function will partially download a podcast feed (up to 500 bytes) and extract the feed name from the <title> tag.
+        If the partial download is successful, the feed name will be extracted and used to create a new FeedReader object.
+        If the partial download fails, an empty string is used as the feed name.
+        :param feed_url: The URL of the podcast feed.
+        :return: A new FeedReader object.
+        """
+        from xml.etree import ElementTree as et
+        from io import BytesIO
+
+        url = feed_url
+        feed_name = ""
+
+        range_upper = 102400  # bytes
+        with req.session() as s:
+            headers = {
+                "Range": f"bytes=0-{range_upper}",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.101.76 Safari/537.36",
+            }
+            partial_data = s.get(url, headers=headers)
+
+        # Iterate over the partial data to find the feed name
+        chunk_size = 2048  # bytes
+
+        chunk_bytes = BytesIO()
+        chunk = next(partial_data.iter_content(chunk_size=chunk_size))
+        chunk_bytes.write(chunk)
+        chunk_bytes.seek(0)
+
+        print(chunk_bytes.getvalue().decode("utf-8"))
+
+        ctx = et.iterparse(chunk_bytes)
+        try:
+            for _, element in ctx:
+                print(element.tag)
+                if element.tag == "title":
+                    feed_name = element.text.lower().replace(" ", "_")
+                    print(f"Feed Name: {feed_name}, Feed URL: {url}")
+                    return cls(feed_name, url)
+        except et.ParseError as e:
+            print(f"{e} Unable to parse XML")
+
+        return None
+
     @staticmethod
     def get_podcast_name_from_metadata(raw_podcast_name: str) -> Tuple[bool, str, str]:
         """
@@ -60,12 +108,27 @@ class FeedReader:
         return (False, "", "")
 
     def find_episode(self, episode_num: int) -> Tuple[bool, None | Episode]:
+        """
+        Find an episode by its episode number.
+
+        Args:
+            episode_num (int): The episode number to search for.
+
+        Returns:
+            Tuple[bool, None | Episode]: A tuple where the first element is a boolean
+            indicating if the episode was found, and the second element is the Episode
+            object if found, otherwise None.
+        """
+
         for episode in self.podcast_info.episodes:
             if episode.episode_num == episode_num:
                 return (True, episode)  # Found
         return (False, None)
 
     def fetch_feed(self) -> None:
+        """
+        Downloads the podcast feed and updates the metadata if it is older than 24 hours or if update_now is True.
+        """
         update_now: bool = False
 
         # Fetch existing metadata
@@ -114,6 +177,20 @@ class FeedReader:
             json.dump(metadata, f)
 
     def parse_feed(self) -> None:
+        """
+        Parse the downloaded feed XML and populate the FeedReader.Podcast object's
+        attributes with the parsed data. The parsed data includes the podcast's title,
+        link, image, owner, description, and episodes.
+
+        The XML is parsed using the xmltodict library, which converts the XML into a
+        nested dictionary. The dictionary is then traversed to extract the required
+        information.
+
+        The episode information is stored in a list of Episode objects, which contain
+        the episode title, episode number, publication date, summary, URL, and duration
+        in seconds. The duration is parsed from the itunes:duration attribute, which
+        can be given in HH:MM:SS format or directly as seconds.
+        """
         root = None
         with open(f"{Paths.cache}/{self.feed_name}.xml", "r") as f:
             root = f.read()
@@ -163,15 +240,23 @@ class FeedReader:
 
 
 if __name__ == "__main__":
-    feed = FeedReader("necronomipod", "https://feeds.megaphone.fm/necronomipod")
-    feed.fetch_feed()
-    feed.parse_feed()
+    # new_feed1 = FeedReader.init_from_url("https://feeds.megaphone.fm/necronomipod.xml")
 
-    feed2 = FeedReader(
-        "last_podcast_on_the_left", "https://feeds.simplecast.com/dCXMIpJz"
-    )
-    feed2.fetch_feed()
-    feed2.parse_feed()
+    # new_feed2 = FeedReader.init_from_url(
+    #     "https://omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/E5F91208-CC7E-4726-A312-AE280140AD11/D64F756D-6D5E-4FAE-B24F-AE280140AD36/podcast.rss"
+    # )
 
-    # print(FeedReader.get_podcast_name_from_metadata("necronomipod"))
-    # print(FeedReader.get_podcast_name_from_metadata("last podcast"))
+    new_feed3 = FeedReader.init_from_url("https://feeds.simplecast.com/dCXMIpJz")
+
+#     feed = FeedReader("necronomipod", "https://feeds.megaphone.fm/necronomipod")
+#     feed.fetch_feed()
+#     feed.parse_feed()
+
+#     feed2 = FeedReader(
+#         "last_podcast_on_the_left", "https://feeds.simplecast.com/dCXMIpJz"
+#     )
+#     feed2.fetch_feed()
+#     feed2.parse_feed()
+
+#     print(FeedReader.get_podcast_name_from_metadata("necronomipod"))
+#     print(FeedReader.get_podcast_name_from_metadata("last podcast"))

@@ -2,7 +2,6 @@ from src.xmlfeedreader import FeedReader
 import requests as req
 import io
 from tqdm import tqdm
-import pyaudio
 from pathlib import Path
 from src.paths import Paths
 from typing import Tuple
@@ -13,7 +12,6 @@ class Playback:
         self.feed_name: str = feed_name
         self.episode_num: int = episode_num
         self.episode: FeedReader.Episode = None
-        self.paudio = pyaudio.PyAudio()
 
     def load_episode(self) -> bool:
         res, get_name, get_metadata = FeedReader.get_podcast_name_from_metadata(

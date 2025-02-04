@@ -16,8 +16,15 @@
         src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/js/bulma-slider.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.core.min.js"
         integrity="sha512-d00Brs/+XQUUaO0Y9Uo8Vw63o7kS6ZcLM2P++17kALrI8oihAfL4pl1jQObeRBgv06j7xG0GHOhudAW0BdrycA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/audio.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/player.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/volume.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/render.js') }}"></script>
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
@@ -122,10 +129,11 @@
                     </div>
 
                     <!-- Content Container -->
-                    <div id="podcasts-columns"> <!--class="is-fullwidth" -->
+                    <div id="podcasts-columns">
                         <div class="is-flex is-flex-direction-column" id="podcasts-list-container">
                         </div>
-                        <div class="is-fullwidth is-invisible" id="add-podcast-container"></div>
+                        <div class="is-fullwidth is-invisible is-flex is-flex-direction-column is-align-items-top"
+                            id="add-podcast-container"></div>
                     </div>
                 </div>
             </div>

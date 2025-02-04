@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, jsonify
+from flask import Flask, render_template, url_for, jsonify, request
 from flask_caching import Cache
 
 from src.render import (
@@ -9,9 +9,11 @@ from src.render import (
     load_custom_podcast,
     load_bottomplayer,
     load_episode_card,
+    load_add_podcast,
 )
-from urllib.parse import unquote
 from src.playback import Playback
+from src.xmlfeedreader import FeedReader
+from urllib.parse import unquote
 
 # Set up Flask-Caching configuration
 config = {
@@ -90,6 +92,14 @@ def load_episode_audio(podname, episode) -> str | None:
 
 @app.route("/load/img/<podname>", methods=["POST"])
 def load_podcast_image(podname) -> str | None:
+    """
+    POST /load/img/<podname>
+
+    Loads the image for the specified podcast.
+
+    :param podname: The name of the podcast.
+    :return: The URL of the image if it exists, a placeholder otherwise.
+    """
     print(f"Load Podcast Image: {podname}")
 
     img = "https://bulma.io/assets/images/placeholders/128x128.png"
@@ -105,6 +115,15 @@ def load_podcast_image(podname) -> str | None:
 
 @app.route("/load/summary/<podname>/<episode>", methods=["POST"])
 def load_podcast_summary(podname, episode) -> str | None:
+    """
+    POST /load/summary/<podname>/<episode>
+
+    Loads the summary for the specified episode of the specified podcast.
+
+    :param podname: The name of the podcast.
+    :param episode: The episode number.
+    :return: The summary of the episode if it exists, 404 otherwise.
+    """
     print(f"Load Podcast Summary: {podname}")
 
     summary = ""
@@ -118,11 +137,48 @@ def load_podcast_summary(podname, episode) -> str | None:
     return jsonify(status=200, mimetype="text/plain", data=summary)
 
 
+@app.route("/load/url", methods=["POST"])
+def load_podcast_from_url() -> str | None:
+    """
+    POST /load/url
+
+    Loads a podcast from a given URL.
+
+    Expects a JSON payload containing a "url" field which specifies the
+    podcast's RSS feed URL. Prints the URL to the console for logging
+    purposes.
+
+    :return: "OK" if the request is processed successfully.
+    """
+
+    data = request.get_json()
+    url = data["url"]
+    print(f"Load Podcast From URL: {url}")
+
+    new_feed = FeedReader.init_from_url(url)
+    if new_feed is None:
+        return jsonify(status=500, mimetype="text/json", data="ERROR")
+    else:
+        new_feed.fetch_feed()
+        new_feed.parse_feed()
+        return jsonify(status=200, mimetype="text/json", data="OK")
+
+
 ############################
 # Render routes
 ############################
 @app.route("/render/default/<rendertype>", methods=["GET"])
 def render_components(rendertype) -> str | None:
+    """
+    GET /render/default/<rendertype>
+
+    Renders default content for a given type.
+
+    :param rendertype: The type of content to render. Should be one of the
+        properties of RenderType (EPISODE, PODCAST, PLAYER, CARD, ADD).
+
+    :returns: The rendered content as a string.
+    """
     render_type: int = int(rendertype)
 
     print(f"Render Default {RenderType(render_type).name}")
@@ -139,23 +195,50 @@ def render_components(rendertype) -> str | None:
     if render_type == RenderType.CARD:
         print("Render Card")
         return load_episode_card()
+    if render_type == RenderType.ADD:
+        print("Render Add")
+        return load_add_podcast()
 
     return ""
 
 
+@app.route("/render/add_podcast", methods=["GET"])
+def render_add_podcast() -> str | None:
+    """
+    GET /render/add_podcast
+
+    Renders the add new podcast form.
+
+    :returns: The rendered form as a string.
+    """
+    print(f"Render Add Podcast")
+    return load_add_podcast()
+
+
 @app.route("/render/episodes/<podname>", methods=["POST"])
 def render_episodes(podname) -> str | None:
+    """
+    POST /render/episodes/<podname>
+
+    Renders the episodes for the specified podcast.
+
+    :param podname: The name of the podcast for which to render episodes.
+    :return: The rendered episodes as a string.
+    """
+
     print(f"Render Episodes for Podcast: {podname}")
     return load_custom_episode(podname)
 
 
 @app.route("/render/podcast", methods=["POST"])
 def render_podcast_from_cache() -> str | None:
+    """
+    POST /render/podcast
+
+    Renders the podcasts from cached data.
+
+    :return: The rendered podcasts as a string if available, None otherwise.
+    """
+
     print(f"Render Podcast From Cache")
     return load_custom_podcast()
-
-
-@app.route("/render/podcast/<url>")
-def render_podcast_from_url(url) -> str | None:
-    print(f"Render Podcast From URL: {url}")
-    return "OK"
