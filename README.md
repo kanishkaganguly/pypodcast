@@ -7,6 +7,9 @@ Playback is handled by the excellent [Howler.js](https://github.com/goldfire/how
 I made this as a side project, since there appears to be no free desktop app for playing podcasts on Linux that I liked. PocketCasts has a web option, but that is only for premium users.
 
 Also, I wanted to learn Bulma.
+
+![alt text](https://github.com/kanishkaganguly/pypodcast/blob/master/player.png?raw=true)
+
 ## Run Locally
 
 Clone the project
@@ -51,7 +54,8 @@ Start the server (inside docker shell)
     - [x]  Iterating over podcasts and lists, with all details
     - [x]  Play/Pause, Seek, Volume
     - [x]  Time-based caching and refresh for metadata
-- [ ]  Queue management
-- [ ]  Adding new podcasts from RSS feed
+- [ ] Queue management
+- [x]  Adding new podcasts from RSS feed
 - [ ]  Proper release mechanism
+- [ ]  Menu for advanced playback controls (speed, sleep timer)
 - [ ]  `LocalStorage` or something for playback save/resume.

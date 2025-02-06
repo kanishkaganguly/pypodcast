@@ -50,7 +50,6 @@ class FeedReader:
         from xml.etree import ElementTree as et
         from io import BytesIO
 
-        url = feed_url
         feed_name = ""
 
         range_upper = 102400  # bytes
@@ -59,26 +58,21 @@ class FeedReader:
                 "Range": f"bytes=0-{range_upper}",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.101.76 Safari/537.36",
             }
-            partial_data = s.get(url, headers=headers)
+            partial_data = s.get(feed_url, headers=headers)
 
-        # Iterate over the partial data to find the feed name
         chunk_size = 2048  # bytes
-
         chunk_bytes = BytesIO()
         chunk = next(partial_data.iter_content(chunk_size=chunk_size))
         chunk_bytes.write(chunk)
         chunk_bytes.seek(0)
 
-        print(chunk_bytes.getvalue().decode("utf-8"))
-
         ctx = et.iterparse(chunk_bytes)
         try:
             for _, element in ctx:
-                print(element.tag)
                 if element.tag == "title":
                     feed_name = element.text.lower().replace(" ", "_")
-                    print(f"Feed Name: {feed_name}, Feed URL: {url}")
-                    return cls(feed_name, url)
+                    print(f"Feed Name: {feed_name}, Feed URL: {feed_url}")
+                    return cls(feed_name, feed_url)
         except et.ParseError as e:
             print(f"{e} Unable to parse XML")
 
@@ -129,6 +123,13 @@ class FeedReader:
         """
         Downloads the podcast feed and updates the metadata if it is older than 24 hours or if update_now is True.
         """
+
+        def download_feed(feed_url: str, feed_name: str) -> None:
+            print("Downloading feed")
+            pod_xml = req.get(feed_url).text
+            with open(f"{Paths.cache}/{feed_name}.xml", "w") as f:
+                f.write(pod_xml)
+
         update_now: bool = False
 
         # Fetch existing metadata
@@ -145,6 +146,7 @@ class FeedReader:
         data = {}
 
         # Download feed if last update is older than 24 hours
+        # If exists in database
         if self.feed_name in metadata.keys():
             data["feed_url"] = metadata[self.feed_name]["feed_url"]
 
@@ -161,15 +163,17 @@ class FeedReader:
 
             # Fetch feed if last update is older than 24 hours
             if update_delta.total_seconds() > 86400 or update_now:
-                print("Downloading feed")
-                pod_xml = req.get(self.feed_url).text
-                with open(f"{Paths.cache}/{self.feed_name}.xml", "w") as f:
-                    f.write(pod_xml)
+                download_feed(self.feed_url, self.feed_name)
                 data["feed_last_update"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             else:
                 # Keep last update timestamp if not updated
                 data["feed_last_update"] = last_update.strftime("%Y-%m-%d %H:%M:%S")
                 print("Using cached feed")
+        else:
+            # If not exists in database
+            download_feed(self.feed_url, self.feed_name)
+            data["feed_url"] = self.feed_url
+            data["feed_last_update"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Update metadata
         with open(pod_metadata_path, "w") as f:
@@ -200,9 +204,25 @@ class FeedReader:
             root, xml_attribs=True, force_list="itunes:category"
         )
 
-        self.podcast_info.title = podcast_dict["rss"]["channel"]["title"]
-        self.podcast_info.link = podcast_dict["rss"]["channel"]["link"]
-        self.podcast_info.image = podcast_dict["rss"]["channel"]["image"]["url"]
+        # Title
+        self.podcast_info.title = (
+            podcast_dict["rss"]["channel"]["title"]
+            if "title" in podcast_dict["rss"]["channel"]
+            else ""
+        )
+        # Link
+        self.podcast_info.link = (
+            podcast_dict["rss"]["channel"]["link"]
+            if "link" in podcast_dict["rss"]["channel"]
+            else ""
+        )
+        # Image
+        self.podcast_info.image = (
+            podcast_dict["rss"]["channel"]["image"]["url"]
+            if "image" in podcast_dict["rss"]["channel"]
+            and "url" in podcast_dict["rss"]["channel"]["image"]
+            else "https://placehold.co/640x640/orange/white?text=Podcast+Image"
+        )
         # Handle multiple categories edge-case
         for category in podcast_dict["rss"]["channel"]["itunes:category"]:
             self.podcast_info.category.append(category["@text"])
@@ -215,7 +235,11 @@ class FeedReader:
         for episode in podcast_dict["rss"]["channel"]["item"]:
             episode_data: FeedReader.Episode = self.Episode()
             episode_data.title = episode["title"]
-            episode_data.episode_num = int(episode["itunes:episode"])
+            episode_data.episode_num = (
+                int(episode["itunes:episode"])
+                if "itunes:episode" in episode.keys()
+                else -1
+            )
             episode_data.pub_date = datetime.strptime(
                 episode["pubDate"], "%a, %d %b %Y %H:%M:%S %z"
             )
@@ -242,11 +266,13 @@ class FeedReader:
 if __name__ == "__main__":
     # new_feed1 = FeedReader.init_from_url("https://feeds.megaphone.fm/necronomipod.xml")
 
-    # new_feed2 = FeedReader.init_from_url(
-    #     "https://omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/E5F91208-CC7E-4726-A312-AE280140AD11/D64F756D-6D5E-4FAE-B24F-AE280140AD36/podcast.rss"
-    # )
+    new_feed2: FeedReader = FeedReader.init_from_url(
+        "https://omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/E5F91208-CC7E-4726-A312-AE280140AD11/D64F756D-6D5E-4FAE-B24F-AE280140AD36/podcast.rss"
+    )
+    new_feed2.fetch_feed()
+    new_feed2.parse_feed()
 
-    new_feed3 = FeedReader.init_from_url("https://feeds.simplecast.com/dCXMIpJz")
+    # new_feed3 = FeedReader.init_from_url("https://feeds.simplecast.com/dCXMIpJz")
 
 #     feed = FeedReader("necronomipod", "https://feeds.megaphone.fm/necronomipod")
 #     feed.fetch_feed()
