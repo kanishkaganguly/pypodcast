@@ -9,6 +9,7 @@ I made this as a side project, since there appears to be no free desktop app for
 Also, I wanted to learn Bulma.
 
 ![alt text](https://github.com/kanishkaganguly/pypodcast/blob/master/player.png?raw=true)
+![alt text](https://github.com/kanishkaganguly/pypodcast/blob/master/player_dark_menu.png?raw=true)
 
 ## Run Locally
 
