@@ -54,8 +54,11 @@ Start the server (inside docker shell)
     - [x]  Iterating over podcasts and lists, with all details
     - [x]  Play/Pause, Seek, Volume
     - [x]  Time-based caching and refresh for metadata
-- [ ] Queue management
 - [x]  Adding new podcasts from RSS feed
+- [x]  Menu for advanced playback controls (speed, sleep timer)
+    - [x]  Make dropdown menu
+    - [x]  Add controls for playback speed
+    - [ ]  Sleep timer
+- [ ] Queue management
 - [ ]  Proper release mechanism
-- [ ]  Menu for advanced playback controls (speed, sleep timer)
 - [ ]  `LocalStorage` or something for playback save/resume.

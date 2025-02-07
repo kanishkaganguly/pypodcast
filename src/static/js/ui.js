@@ -1,21 +1,46 @@
 ////////////////////////////////////////////////////////////////
 // UI Functions
 
-// Dark Mode
+
+/**
+ * Event Handler for when the dark mode toggle button is clicked.
+ * Toggles dark mode.
+ * @function
+ * @param {object} event - The event object.
+ * @listens click
+ * @returns {void}
+ */
 $(document).on("click", "#dark-mode-toggle", function () {
     $("html").toggleClass("theme-dark");
     $("#top-navbar").toggleClass("has-background-dark has-background-light");
     $("#bottom-player").toggleClass("has-background-dark has-background-light");
     $("#top-navbar-title").toggleClass("has-text-primary-25 has-text-primary-25-invert");
     $(this).find("[data-fa-i2svg]").toggleClass("fa-moon fa-sun");
+    $(this).toggleClass("is-dark is-light");
 });
 
-// Change cursor on hover for podcast boxes
+
+/**
+ * Event Handler for when a podcast box is hovered.
+ * Changes the cursor to a pointer.
+ * @function
+ * @param {object} event - The event object.
+ * @param {object} event.target - The target element of the event.
+ * @listens mouseover
+ * @returns {void}
+ */
 $(document).on("mouseover", ".podcast-box", function () {
     this.style.cursor = "pointer";
 });
 
-// Render episodes when podcast box is clicked
+/**
+ * Event Handler for when a podcast box is clicked.
+ * Loads the podcast episodes.
+ * @function
+ * @param {object} event - The event object.
+ * @param {object} event.target - The target element of the event.
+ * @listens click
+ */
 $(document).on("click", ".podcast-box", function () {
     podcast_name = $(this).find("#podcast-name-display").text();
 
@@ -32,6 +57,26 @@ $(document).on("click", ".podcast-box", function () {
     call_episodes_renderer(podcast_name);
 });
 
+/**
+ * Event Handler for when the dropdown button is clicked.
+ * Toggles the dropdown menu.
+ * @function 
+ * @param {object} event - The event object.
+ * @param {object} event.target - The target element of the event.
+ * @listens click
+ * @returns {void}
+ */
+$(document).on("click", "#dropdown-trigger-button", function () {
+    console.log("Dropdown clicked");
+    $("#advanced-dropdown").toggleClass("is-active");
+    $(this).find("[data-fa-i2svg]").toggleClass("fa-angle-down").toggleClass("fa-angle-up");
+
+    // Set current player speed
+    if (is_player_ready) {
+        $("#playback-speed-slider").val(player.rate());
+        $("#playback-speed-value").val(player.rate());
+    }
+});
 
 /**
  * Event Handler for when a episode play button is clicked.

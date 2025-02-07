@@ -44,18 +44,18 @@ body {
 /* -------------------- General Styles ------------------------ */
 /* ------------------------------------------------------------ */
 #podcasts-columns {
-    max-height: 55vh;
+    max-height: 60vh;
     scrollbar-width: thin;
 }
 
-#episode-center-description {
+#episode-center-summary {
     overflow-x: hidden;
     overflow-y: hidden;
-    max-height: 8vh;
+    max-height: 60vh;
     scrollbar-width: thin;
 }
 
-#episode-center-description:hover {
+#episode-center-summary:hover {
     overflow-y: scroll;
 }
 
@@ -71,8 +71,12 @@ body {
 }
 
 .podcast-description {
-    text-overflow: ellipsis;
-    max-width: 60ch;
-    word-wrap: break-word;
-    white-space: initial;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    max-height: 8vh;
+    scrollbar-width: thin;
+}
+
+.podcast-description:hover {
+    overflow-y: scroll;
 }

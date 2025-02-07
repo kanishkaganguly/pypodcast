@@ -1,6 +1,33 @@
 ////////////////////////////////////////////////////////////////
 // Audio Functions
 
+function audioPlayed() {
+    // Update progress bar
+    updateProgressDisplay();
+
+    // Set play/pause button
+    $("#play-pause").find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
+    $("#play-pause").removeClass("paused");
+}
+
+function audioPaused() {
+    // Stop progress bar
+    stopProgressChecker();
+
+    // Set play/pause button
+    $("#play-pause").find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
+    $("#play-pause").addClass("paused");
+}
+
+function audioStopped() {
+    // Stop progress bar
+    stopProgressChecker();
+
+    // Set play/pause button
+    $("#play-pause").find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
+    $("#play-pause").addClass("paused");
+}
+
 function createAudioPlayerFromNowPlaying(now_playing_podname, episode_number) {
     $.ajax({
         url: "/get_episode_url/" + now_playing_podname.toLowerCase().replaceAll(" ", "_") + "/" + episode_number,
@@ -26,8 +53,8 @@ function _createAudioPlayer(audio_url) {
         autoplay: false,
         volume: 0.2,
         onload: audioPlayerLoaded,
-        onplay: updateProgressDisplay,
-        onpause: stopProgressChecker,
-        onstop: stopProgressChecker
+        onplay: audioPlayed,
+        onpause: audioPaused,
+        onstop: audioStopped
     });
 }

@@ -11,15 +11,16 @@
     <!-- JS Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v6.6.0/js/all.js"></script>
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/js/bulma-slider.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.core.min.js"
         integrity="sha512-d00Brs/+XQUUaO0Y9Uo8Vw63o7kS6ZcLM2P++17kALrI8oihAfL4pl1jQObeRBgv06j7xG0GHOhudAW0BdrycA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+        crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
 
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/audio.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/speed.js') }}"></script>
     <script src="{{ url_for('static', filename='js/player.js') }}"></script>
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/volume.js') }}"></script>
@@ -50,12 +51,67 @@
         </div>
         <div class="navbar-menu">
             <div class="navbar-end">
+
+                <!-- Menu navbar item -->
+                <div class="navbar-item">
+                    <!-- Main dropdown div -->
+                    <div class="dropdown is-right" id="advanced-dropdown">
+                        <!-- Dropdown button -->
+                        <div class="dropdown-trigger">
+                            <button class="button is-dark" id="dropdown-trigger-button">
+                                <span class="icon is-small">
+                                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <!-- Dropdown content box -->
+                        <div class="dropdown-menu" id="advanced-menu" role="menu">
+                            <!-- Dropdown content -->
+                            <div class="dropdown-content">
+
+                                <!-- Playback speed -->
+                                <div class="dropdown-item">
+                                    <div class="box has-text-centered">
+                                        <a class="button is-static is-primary">
+                                            <span class="icon">
+                                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                            </span>
+                                            <span>Playback Speed</span>
+                                        </a>
+                                        <input class="slider is-fullwidth" id="playback-speed-slider" type="range"
+                                            min="0.5" max="2" step="0.1" value="1" />
+                                        <output for="playback-speed-slider" id="playback-speed-value">1.0</output>x
+                                    </div>
+                                </div>
+
+                                <!-- Divider -->
+                                <hr class="dropdown-divider" />
+
+                                <!-- Sleep timer -->
+                                <div class="dropdown-item">
+                                    <div class="box has-text-centered">
+                                        <a class="button is-static is-primary">
+                                            <span class="icon">
+                                                <i class="fas fa-stopwatch" aria-hidden="true"></i>
+                                            </span>
+                                            <span>Sleep Timer</span>
+                                        </a>
+                                        <input class="slider is-fullwidth" id="sleep-timer-slider" type="range" min="5"
+                                            max="60" step="5" value="1" />
+                                        <output for="sleep-timer-slider" id="sleep-timer-value">5</output> minutes
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dark mode navbar item -->
                 <div class="navbar-item">
                     <button class="button is-dark" id="dark-mode-toggle">
                         <span class="icon">
                             <i class="fas fa-moon" aria-hidden="true"></i>
                         </span>
-                        <span>Dark Mode</span>
                     </button>
                 </div>
             </div>

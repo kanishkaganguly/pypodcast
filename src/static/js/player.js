@@ -6,21 +6,21 @@ $(document).on("click", "#play-pause", function () {
     var is_paused = $(this).hasClass("paused");
 
     if (is_paused) {
-        $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
+        // $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
 
         if (is_player_ready && !player.playing()) {
             player.play();
         }
 
-        $(this).removeClass("paused");
+        // $(this).removeClass("paused");
     } else {
-        $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
+        // $(this).find("[data-fa-i2svg]").toggleClass("fa-play").toggleClass("fa-pause");
 
         if (is_player_ready && player.playing()) {
             player.pause();
         }
 
-        $(this).addClass("paused");
+        // $(this).addClass("paused");
     }
 });
 
