@@ -48,6 +48,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: "{{defaultContext}}"
+          file: "{{defaultContext}}/py310.Dockerfile"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
