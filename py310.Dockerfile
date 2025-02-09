@@ -2,9 +2,16 @@ FROM python:3.10.14-bookworm
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=America/Los_Angeles
 
+SHELL [ "/bin/bash", "-c" ]
+
+# Set the working directory
 RUN mkdir -p /pypodcast
 WORKDIR /pypodcast
-COPY . /pypodcast
+# Copy the current directory contents into the container at /pypodcast
+COPY ./src /pypodcast/src
+COPY ./entrypoint.sh /pypodcast/entrypoint.sh
+COPY ./just /pypodcast/just
+COPY ./justfile /pypodcast/justfile
 
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
@@ -27,3 +34,7 @@ RUN apt update && \
     tqdm \
     flask-caching \
     flaskwebgui
+
+RUN mv /pypodcast/entrypoint.sh /entrypoint.sh && \
+    chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
