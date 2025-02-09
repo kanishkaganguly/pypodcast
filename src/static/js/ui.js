@@ -3,6 +3,23 @@
 
 
 /**
+ * Event Handler for when a close button is clicked.
+ * Closes the modal.
+ * @function
+ * @param {object} event - The event object.
+ * @param {object} event.target - The target element of the event.
+ * @listens click
+ * @returns {void}
+ */
+function closeModal($el) {
+    $el.classList.remove('is-active');
+}
+
+$(document).on("click", ".modal-close", function () {
+    $(".modal").removeClass("is-active");
+});
+
+/**
  * Event Handler for when the dark mode toggle button is clicked.
  * Toggles dark mode.
  * @function

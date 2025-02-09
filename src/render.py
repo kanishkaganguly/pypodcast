@@ -5,6 +5,7 @@ from src.xmlfeedreader import FeedReader
 import json
 from datetime import timedelta, datetime
 from src.paths import Paths
+from pathlib import Path
 
 
 class RenderType(IntEnum):
@@ -97,15 +98,15 @@ def load_custom_podcast(podcast_name=None) -> str:
 
 
 def load_bottomplayer() -> str:
-    with open("src/templates/bottom_player.html", "r") as bottom_player:
+    with open(Path(Paths.templates, "bottom_player.html"), "r") as bottom_player:
         return Markup(bottom_player.read())
 
 
 def load_episode_card() -> str:
-    with open("src/templates/episode_card.html", "r") as episode_card:
+    with open(Path(Paths.templates, "episode_card.html"), "r") as episode_card:
         return Markup(episode_card.read())
 
 
 def load_add_podcast() -> str:
-    with open("src/templates/add_new_podcast.html", "r") as add_podcast:
+    with open(Path(Paths.templates, "add_new_podcast.html"), "r") as add_podcast:
         return Markup(add_podcast.read())

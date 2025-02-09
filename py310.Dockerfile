@@ -10,8 +10,10 @@ RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install -y \
     build-essential \
     pkg-config \
-    portaudio19-dev \
-    python3-all-dev && \
+    python3-all-dev \
+    chromium \
+    pulseaudio pulseaudio-utils \
+    python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1 libgirepository1.0-dev && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     python3 -m pip install --upgrade pip && \
@@ -19,7 +21,9 @@ RUN apt update && \
     wheel \
     requests \
     xmltodict \
+    waitress \
     flask \
     thefuzz \
     tqdm \
-    flask-caching
+    flask-caching \
+    flaskwebgui

@@ -1,5 +1,8 @@
 from flask import Flask, render_template, url_for, jsonify, request
 from flask_caching import Cache
+from markupsafe import Markup
+from src.paths import Paths
+from pathlib import Path
 
 from src.render import (
     RenderType,
@@ -14,6 +17,11 @@ from src.render import (
 from src.playback import Playback
 from src.xmlfeedreader import FeedReader
 from urllib.parse import unquote
+from flaskwebgui import FlaskUI
+
+############################
+# Flask configuration
+############################
 
 # Set up Flask-Caching configuration
 config = {
@@ -32,6 +40,21 @@ cache = Cache(app)
 ############################
 # Base route
 ############################
+def render_playback_speed_fragment() -> str:
+    with open(Path(Paths.templates, "playback_speed.html"), "r") as f:
+        return f.read()
+
+
+def render_sleep_timer_fragment() -> str:
+    with open(Path(Paths.templates, "sleep_timer.html"), "r") as f:
+        return f.read()
+
+
+def render_audio_picker_fragment() -> str:
+    with open(Path(Paths.templates, "audio_picker.html"), "r") as f:
+        return f.read()
+
+
 @app.route("/")
 def render_base() -> str:
     """
@@ -39,7 +62,12 @@ def render_base() -> str:
 
     The base route. Serves the HTML template for the entire web interface.
     """
-    return render_template("base.html")
+    return render_template(
+        "base.html",
+        playback_speed_fragment=Markup(render_playback_speed_fragment()),
+        sleep_timer_fragment=Markup(render_sleep_timer_fragment()),
+        audio_picker_fragment=Markup(render_audio_picker_fragment()),
+    )
 
 
 ############################
@@ -242,3 +270,53 @@ def render_podcast_from_cache() -> str | None:
 
     print(f"Render Podcast From Cache")
     return load_custom_podcast()
+
+
+def shutdown_app():
+    import os
+
+    print("Shutting down...")
+    os._exit(0)
+
+
+def start_flask(**server_kwargs):
+    app = server_kwargs.pop("app", None)
+    # server_kwargs.pop("debug", None)
+
+    try:
+        import waitress
+
+        waitress.serve(app, **server_kwargs)
+    except:
+        app.run(**server_kwargs)
+
+
+if __name__ == "__main__":
+    DEBUG = False
+    WINDOW_WIDTH = 1920
+    WINDOW_HEIGHT = 1024
+
+    if DEBUG:
+        start_flask(app=app, debug=True, host="0.0.0.0", port=34567)
+    else:
+        FlaskUI(
+            server=start_flask,
+            server_kwargs={
+                "app": app,
+                "port": 34567,
+            },
+            on_shutdown=shutdown_app,
+            width=WINDOW_WIDTH,
+            height=WINDOW_HEIGHT,
+            browser_command=[
+                "/usr/bin/chromium",
+                "--no-sandbox",
+                "--no-first-run",
+                "--allow-insecure-localhost",
+                "--app=http://localhost:34567",
+                "--new-window",
+                "--no-default-browser-check",
+                f"--window-size={WINDOW_WIDTH},{WINDOW_HEIGHT}",
+            ],
+            app_mode=True,
+        ).run()

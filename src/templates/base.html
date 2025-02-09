@@ -16,16 +16,18 @@
         src="https://cdn.jsdelivr.net/npm/bulma-slider@2.0.5/dist/js/bulma-slider.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.core.min.js"
         integrity="sha512-d00Brs/+XQUUaO0Y9Uo8Vw63o7kS6ZcLM2P++17kALrI8oihAfL4pl1jQObeRBgv06j7xG0GHOhudAW0BdrycA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" async></script>
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/render.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/audio_source.js') }}"></script>
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/audio.js') }}"></script>
     <script src="{{ url_for('static', filename='js/speed.js') }}"></script>
     <script src="{{ url_for('static', filename='js/player.js') }}"></script>
     <script src="{{ url_for('static', filename='js/progress.js') }}"></script>
     <script src="{{ url_for('static', filename='js/volume.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/render.js') }}"></script>
+
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" />
@@ -70,37 +72,20 @@
                             <div class="dropdown-content">
 
                                 <!-- Playback speed -->
-                                <div class="dropdown-item">
-                                    <div class="box has-text-centered">
-                                        <a class="button is-static is-primary">
-                                            <span class="icon">
-                                                <i class="fas fa-clock" aria-hidden="true"></i>
-                                            </span>
-                                            <span>Playback Speed</span>
-                                        </a>
-                                        <input class="slider is-fullwidth" id="playback-speed-slider" type="range"
-                                            min="0.5" max="2" step="0.1" value="1" />
-                                        <output for="playback-speed-slider" id="playback-speed-value">1.0</output>x
-                                    </div>
-                                </div>
+                                {{ playback_speed_fragment }}
 
                                 <!-- Divider -->
                                 <hr class="dropdown-divider" />
 
                                 <!-- Sleep timer -->
-                                <div class="dropdown-item">
-                                    <div class="box has-text-centered">
-                                        <a class="button is-static is-primary">
-                                            <span class="icon">
-                                                <i class="fas fa-stopwatch" aria-hidden="true"></i>
-                                            </span>
-                                            <span>Sleep Timer</span>
-                                        </a>
-                                        <input class="slider is-fullwidth" id="sleep-timer-slider" type="range" min="5"
-                                            max="60" step="5" value="1" />
-                                        <output for="sleep-timer-slider" id="sleep-timer-value">5</output> minutes
-                                    </div>
-                                </div>
+                                {{ sleep_timer_fragment }}
+
+                                <!-- Divider -->
+                                <hr class="dropdown-divider" />
+
+                                <!-- Audio Picker -->
+                                {{ audio_picker_fragment }}
+
                             </div>
                         </div>
                     </div>
@@ -119,7 +104,19 @@
     </nav>
 
     <!-- Top-level container -->
-    <div class="container is-fluid">
+    <div class="container is-fluid mt-5">
+
+        <!-- Alert modal -->
+        <div class="modal" id="error-modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <div class="box">
+                    <span id="error-message"></span>
+                </div>
+            </div>
+            <button class="modal-close is-large" aria-label="close"></button>
+        </div>
+
         <!-- Two columns for left and right panes -->
         <div class="columns">
 

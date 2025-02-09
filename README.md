@@ -60,6 +60,7 @@ Start the server (inside docker shell)
     - [x]  Make dropdown menu
     - [x]  Add controls for playback speed
     - [ ]  Sleep timer
+- [ ] pywebview for proper app
 - [ ] Queue management
 - [ ]  Proper release mechanism
 - [ ]  `LocalStorage` or something for playback save/resume.

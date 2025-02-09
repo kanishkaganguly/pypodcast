@@ -106,8 +106,10 @@ function call_add_podcast_renderer() {
  * Calls the default renderers for all types of content.
  * This is called when the page is loaded.
  */
+
 $(function () {
   console.log("Loaded page");
+
   $("#podcasts-list-tab").click();
   call_default_renderer(RenderType.EPISODE);
   call_default_renderer(RenderType.PLAYER);
@@ -115,6 +117,8 @@ $(function () {
   bulmaSlider.attach();
 
   disable_all_UI();
+
+  audioSourceSelector();
 });
 
 
