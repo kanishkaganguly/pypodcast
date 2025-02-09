@@ -10,6 +10,7 @@ Also, I wanted to learn Bulma.
 
 ![alt text](https://github.com/kanishkaganguly/pypodcast/blob/master/player.png?raw=true)
 ![alt text](https://github.com/kanishkaganguly/pypodcast/blob/master/player_dark_menu.png?raw=true)
+![alt text](https://github.com/kanishkaganguly/pypodcast/blob/master/player_gui.png?raw=true)
 
 ## Run Locally
 
@@ -56,11 +57,13 @@ Start the server (inside docker shell)
     - [x]  Play/Pause, Seek, Volume
     - [x]  Time-based caching and refresh for metadata
 - [x]  Adding new podcasts from RSS feed
-- [x]  Menu for advanced playback controls (speed, sleep timer)
+- [x]  Menu for advanced playback controls (speed, sleep timer, audio source select)
     - [x]  Make dropdown menu
     - [x]  Add controls for playback speed
+    - [x]  PulseAudio forwarding, audio source selector inside menu
     - [ ]  Sleep timer
-- [ ] pywebview for proper app
+- [x] [flaskwebgui](https://github.com/ClimenteA/flaskwebgui) for proper app mode
 - [ ] Queue management
 - [ ]  Proper release mechanism
+    - [ ] `flaskwebgui` should allow for `pyinstaller`-based mechanisms
 - [ ]  `LocalStorage` or something for playback save/resume.
