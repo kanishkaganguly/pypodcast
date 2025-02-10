@@ -35,7 +35,6 @@ run: stop remove
     -v /run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse \
     -v /run/user/$(id -u)/pulse/native:/run/user/$(id -u)/pulse/native \
     --device=/dev/snd:/dev/snd \
-    --runtime=nvidia \
     pypodcast:latest
 
 run-volume: stop remove
@@ -55,7 +54,6 @@ run-volume: stop remove
     -v /run/user/$(id -u)/pulse:/run/user/$(id -u)/pulse \
     -v /run/user/$(id -u)/pulse/native:/run/user/$(id -u)/pulse/native \
     --device=/dev/snd:/dev/snd \
-    --runtime=nvidia \
     --entrypoint "/bin/bash" \
     pypodcast:latest
 

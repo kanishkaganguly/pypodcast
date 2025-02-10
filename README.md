@@ -12,8 +12,13 @@ Also, I wanted to learn Bulma.
 ![Player Dark Mode with Advanced Menu](https://github.com/kanishkaganguly/pypodcast/blob/master/player_dark_menu.png?raw=true)
 ![Player GUI Mode with Advanced Menu](https://github.com/kanishkaganguly/pypodcast/blob/master/player_gui.png?raw=true)
 
-## Run Locally
+## Run
+---
+### Use the app
+- Grab the `compose.yml` file from the repository
+- Run `UID=${UID} docker compose up`
 
+### Development
 Clone the project
 
 ```bash
@@ -64,6 +69,7 @@ Start the server (inside docker shell)
     - [ ]  Sleep timer
 - [x] [flaskwebgui](https://github.com/ClimenteA/flaskwebgui) for proper app mode
 - [ ] Queue management
-- [ ]  Proper release mechanism
-    - [ ] `flaskwebgui` should allow for `pyinstaller`-based mechanisms
+- [x]  Proper release mechanism
+    - [x] DockerHub CI/CD with `compose.yml` launcher
+    - [ ] `flaskwebgui` should allow for `pyinstaller`-based mechanisms (`wontfix`)
 - [ ]  `LocalStorage` or something for playback save/resume.

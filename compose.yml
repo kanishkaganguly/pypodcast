@@ -1,0 +1,29 @@
+name: pypodcast
+services:
+    pypodcast:
+        stdin_open: true
+        tty: true
+        container_name: pypodcast
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: all
+                          capabilities:
+                              - gpu
+        privileged: true
+        network_mode: host
+        volumes:
+            - /tmp/.X11-unix:/tmp/.X11-unix
+            - /run/user/${UID}/pulse:/run/user/${UID}/pulse
+            - /run/user/${UID}/pulse/native:/run/user/${UID}/pulse/native 
+        environment:
+            - NVIDIA_DRIVER_CAPABILITIES=all
+            - NVIDIA_VISIBLE_DEVICES=all
+            - DISPLAY=:0
+            - PULSE_SERVER=unix:/run/user/${UID}/pulse/native
+            - PULSE_COOKIE=${XDG_RUNTIME_DIR}/pulse/cookie
+        devices:
+            - /dev/snd:/dev/snd
+        image: kganguly/pypodcast:latest
