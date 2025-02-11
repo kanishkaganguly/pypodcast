@@ -60,7 +60,10 @@ run-volume: stop remove
 exec-bash:
     docker exec -it pypodcast /bin/bash
 
-exec-ui:
+ui-dev:
+    DISPLAY=:0 FLASK_RUN_PORT=34567 python3 -m src.webui --debug
+
+ui-app:
     DISPLAY=:0 FLASK_RUN_PORT=34567 python3 -m src.webui
 
-run-debug: run-volume exec-bash
+run-dev: run-volume exec-bash

@@ -292,9 +292,22 @@ def start_flask(**server_kwargs):
 
 
 if __name__ == "__main__":
-    DEBUG = False
-    WINDOW_WIDTH = 1920
-    WINDOW_HEIGHT = 1024
+    import argparse as ap
+
+    parser = ap.ArgumentParser()
+    parser.add_argument(
+        "--debug", action="store_true", help="Run the server in debug mode"
+    )
+    parser.add_argument(
+        "--window-width", type=int, default=1920, help="Set the window width"
+    )
+    parser.add_argument(
+        "--window-height", type=int, default=1024, help="Set the window height"
+    )
+
+    DEBUG = parser.parse_args().debug
+    WINDOW_WIDTH = parser.parse_args().window_width
+    WINDOW_HEIGHT = parser.parse_args().window_height
 
     if DEBUG:
         start_flask(app=app, debug=True, host="0.0.0.0", port=34567)

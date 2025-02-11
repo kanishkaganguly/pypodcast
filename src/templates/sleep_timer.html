@@ -6,7 +6,16 @@
             </span>
             <span>Sleep Timer</span>
         </a>
-        <input class="slider is-fullwidth" id="sleep-timer-slider" type="range" min="5" max="60" step="5" value="1" />
+        <input class="slider is-fullwidth" id="sleep-timer-slider" type="range" min="5" max="60" step="5" value="5" />
         <output for="sleep-timer-slider" id="sleep-timer-value">5</output> minutes
+
+        <div class="columns mt-5">
+            <div class="column">
+                <progress class="progress is-small is-primary" id="sleep-timer-progress" max="1" value="1"></progress>
+            </div>
+            <div class="column is-one-fifth">
+                <button class="is-small delete" id="sleep-timer-cancel"> </button>
+            </div>
+        </div>
     </div>
 </div>

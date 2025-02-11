@@ -11,9 +11,10 @@ Also, I wanted to learn Bulma.
 ![Player v1](https://github.com/kanishkaganguly/pypodcast/blob/master/player.png?raw=true)
 ![Player Dark Mode with Advanced Menu](https://github.com/kanishkaganguly/pypodcast/blob/master/player_dark_menu.png?raw=true)
 ![Player GUI Mode with Advanced Menu](https://github.com/kanishkaganguly/pypodcast/blob/master/player_gui.png?raw=true)
+![Sleep timer](https://github.com/kanishkaganguly/pypodcast/blob/master/sleep_timer.png?raw=true)
 
 ## Run
----
+
 ### Use the app
 - Grab the `compose.yml` file from the repository
 - Run `UID=${UID} docker compose up`
@@ -66,7 +67,7 @@ Start the server (inside docker shell)
     - [x]  Make dropdown menu
     - [x]  Add controls for playback speed
     - [x]  PulseAudio forwarding, audio source selector inside menu
-    - [ ]  Sleep timer
+    - [x]  Sleep timer
 - [x] [flaskwebgui](https://github.com/ClimenteA/flaskwebgui) for proper app mode
 - [ ] Queue management
 - [x]  Proper release mechanism
